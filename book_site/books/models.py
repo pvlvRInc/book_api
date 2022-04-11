@@ -40,14 +40,51 @@ class Books(models.Model):
     )
     status = models.CharField(choices=BOOK_STATUS, max_length=15, verbose_name='Статус')
 
-    publisher = models.ForeignKey('Companies', on_delete=models.CASCADE, related_name='books', verbose_name='Издатель')
-    authors = models.ManyToManyField('Artists', related_name='author_books', verbose_name='Авторы')
-    illustrators = models.ManyToManyField('Artists', related_name='illustrator_books', verbose_name='Иллюстраторы')
-    translators = models.ManyToManyField('Artists', related_name='translator_books', verbose_name='Переводчики')
-    book_series = models.ForeignKey('Series', blank=True, null=True, on_delete=models.SET_NULL, related_name='books',
-                                    verbose_name='Серия')
-    genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books', verbose_name='Жанры')
-    tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books', verbose_name='Теги')
+    publisher = models.ForeignKey(
+        'Companies',
+        on_delete=models.CASCADE,
+        related_name='books',
+        verbose_name='Издатель'
+    )
+    authors = models.ManyToManyField(
+        'Artists',
+        related_name='author_books',
+        verbose_name='Авторы'
+    )
+    illustrators = models.ManyToManyField(
+        'Artists',
+        blank=True,
+        related_name='illustrator_books',
+        verbose_name='Иллюстраторы'
+    )
+    translators = models.ManyToManyField(
+        'Artists',
+        blank=True,
+        related_name='translator_books',
+        verbose_name='Переводчики'
+    )
+    book_series = models.ForeignKey(
+        'Series',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='books',
+        verbose_name='Серия'
+    )
+    genres = models.ManyToManyField(
+        'Genres',
+        symmetrical=False,
+        blank=True,
+        related_name='books',
+        verbose_name='Жанры'
+    )
+    tags = models.ManyToManyField(
+        'Tags',
+        symmetrical=False,
+        blank=True,
+        related_name='books',
+        verbose_name='Теги'
+    )
 
     def __str__(self):
         return self.title
@@ -138,12 +175,30 @@ class Commentary(models.Model):
     """ Commentary model """
 
     ip = models.CharField(max_length=10, verbose_name='IP Адресс')
-    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Книга')
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='commentaries',
-                             verbose_name='Пользователь')
+    book = models.ForeignKey(
+        Books,
+        on_delete=models.CASCADE,
+        related_name='commentaries',
+        verbose_name='Книга'
+    )
+    user = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='commentaries',
+        verbose_name='Пользователь'
+    )
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='child',
+        verbose_name='Родитель'
+    )
     content = models.CharField(max_length=10, verbose_name='Содержание')
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child',
-                               verbose_name='Родитель')
+
 
     def __str__(self):
         return self.book.title + self.content[:self.content.find('', 15)] + '...'
