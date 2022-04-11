@@ -39,6 +39,9 @@ class Books(models.Model):
     genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books', verbose_name='Жанры')
     tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books', verbose_name='Теги')
 
+    def __str__(self):
+        return self.title
+
 
 class Artists(models.Model):
     """ Artist model """
@@ -56,6 +59,9 @@ class Artists(models.Model):
     )
     type = models.CharField(choices=ARTIST_TYPES, verbose_name='Вид деятельности')
 
+    def __str__(self):
+        return self.first_name + " " + self.last_name
+
 
 class Companies(models.Model):
     """ Company model """
@@ -64,11 +70,17 @@ class Companies(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
 
+    def __str__(self):
+        return self.name
+
 
 class Series(models.Model):
     """ Series model """
     name = models.CharField(max_length=15, verbose_name='Название')
     description = models.TextField(verbose_name='Описание')
+
+    def __str__(self):
+        return self.name
 
 
 class Genres(models.Model):
@@ -76,10 +88,16 @@ class Genres(models.Model):
     name = models.CharField(max_length=15, verbose_name='Название')
     description = models.TextField(verbose_name='Описание')
 
+    def __str__(self):
+        return self.name
+
 
 class Tags(models.Model):
     """ Tag model """
     name = models.CharField(max_length=15, verbose_name='Название')
+
+    def __str__(self):
+        return self.name
 
 
 class Commentary(models.Model):
@@ -89,7 +107,11 @@ class Commentary(models.Model):
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Книга')
     user = models.ForeignKey(User, blank=True, null=True, related_name='commentaries', verbose_name='Пользователь')
     content = models.CharField(max_length=10, verbose_name='Содержание')
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child', verbose_name='Родитель')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child',
+                               verbose_name='Родитель')
+
+    def __str__(self):
+        return self.book.title + self.content[:self.content.find('', 15)] + '...'
 
 
 class UserBookRating(models.Model):
@@ -98,6 +120,9 @@ class UserBookRating(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь')
     rate = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
     book = models.ForeignKey(Books, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Книга')
+
+    def __str__(self):
+        return ' '.join([self.user, self.book, self.rating])
 
 
 class Quote(models.Model):
@@ -109,6 +134,8 @@ class Quote(models.Model):
     up_votes = models.IntegerField(verbose_name='Голоса за')
     down_votes = models.IntegerField(verbose_name='Голоса против')
 
+    def __str__(self):
+        return self.book.title + ' ' + self.pk
 
 class UserProfile(models.Model):
     """
@@ -118,12 +145,17 @@ class UserProfile(models.Model):
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile', verbose_name='Пользователь')
+    first_name = models.CharField(max_length=15, verbose_name='Имя')
+    last_name = models.CharField(max_length=15, verbose_name='Фамилия')
     avatar = models.ImageField(upload_to='media/avatars/%Y/%m/%d', blank=True, verbose_name='Аватар')
 
     read_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Прочитано')
     current_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Читает')
     planned_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='В планах')
     forsaken_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Брошено')
+
+    def __str__(self):
+        return self.user.get_username()
 
     # todo
     #  add image eraser function
