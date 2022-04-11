@@ -60,12 +60,14 @@ class Books(models.Model):
     illustrators = models.ManyToManyField(
         'Artists',
         blank=True,
+        null=True,
         related_name='illustrator_books',
         verbose_name='Иллюстраторы'
     )
     translators = models.ManyToManyField(
         'Artists',
         blank=True,
+        null=True,
         related_name='translator_books',
         verbose_name='Переводчики'
     )
