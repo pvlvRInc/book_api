@@ -16,9 +16,15 @@ class Books(models.Model):
     publish_year = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Дата публикации')
     pages = models.DecimalField(max_digits=6, decimal_places=0, verbose_name='Кол-во страниц')
     price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Название')
-    rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
-    downloads = models.IntegerField(verbose_name='Скачиваний')
-    age_restriction = models.DecimalField(max_digits=2, decimal_places=0, verbose_name='Возрастное ограничение')
+    rating = models.DecimalField(default=0, max_digits=2, decimal_places=1, verbose_name='Рейтинг')
+    downloads = models.IntegerField(default=0, verbose_name='Скачиваний')
+    age_restriction = models.DecimalField(
+        null=True,
+        blank=True,
+        max_digits=2,
+        decimal_places=0,
+        verbose_name='Возрастное ограничение'
+    )
 
     BOOK_TYPES = (
         ('T', 'Текст'),
@@ -104,9 +110,9 @@ class Artists(models.Model):
     email = models.EmailField(blank=True, null=True, verbose_name='Почта')
 
     ARTIST_TYPES = (
-        ('I', 'Illustrator'),
-        ('A', 'Author'),
-        ('T', 'Translator'),
+        ('I', 'Иллюстратор'),
+        ('A', 'Автор'),
+        ('T', 'Переводчик'),
     )
     type = models.CharField(choices=ARTIST_TYPES, max_length=15, verbose_name='Вид деятельности')
 
@@ -136,6 +142,7 @@ class Companies(models.Model):
 class Series(models.Model):
     """ Series model """
     name = models.CharField(max_length=15, verbose_name='Название')
+    authors = models.ManyToManyField('Artists', related_name='author_series', verbose_name='Авторы')
     description = models.TextField(verbose_name='Описание')
 
     def __str__(self):
