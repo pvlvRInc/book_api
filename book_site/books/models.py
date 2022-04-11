@@ -1,19 +1,19 @@
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 
 
 # todo
 #  add format of files and files themself
-#  add quotes
 #  add verbose and related names
 #  define __str__
-#  override User model
+#  add age restriction
 
 class Books(models.Model):
     """ Book model """
 
     title = models.CharField(max_length=30)
     description = models.TextField()
-    cover = models.ImageField(upload_to='media/%Y/%m/%d', blank=True)
+    cover = models.ImageField(upload_to='media/covers/%Y/%m/%d', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     publish_year = models.DecimalField(max_digits=4, decimal_places=0)
     pages = models.DecimalField(max_digits=6, decimal_places=0)
@@ -32,7 +32,7 @@ class Books(models.Model):
     authors = models.ManyToManyField('Artists', related_name='books')
     illustrators = models.ManyToManyField('Artists', related_name='books')
     translators = models.ManyToManyField('Artists', related_name='books')
-    book_series = models.ForeignKey('Series', related_name='books')  # todo add model
+    book_series = models.ForeignKey('Series', related_name='books')
     genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books')
     tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books')
 
@@ -84,7 +84,7 @@ class Commentary(models.Model):
 
     ip = models.CharField(max_length=10)
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries')
-    user = models.ForeignKey(blank=True, null=True, related_name='commentaries')  # todo add model
+    user = models.ForeignKey(User, blank=True, null=True, related_name='commentaries')
     content = models.CharField(max_length=10)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
@@ -92,15 +92,35 @@ class Commentary(models.Model):
 class UserBookRating(models.Model):
     """ UserBookRating model """
 
-    user = models.ForeignKey()  # todo add model
-    content = models.CharField(max_length=10)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User)
+    rate = models.DecimalField(max_digits=2, decimal_places=1)
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, blank=True, null=True)
 
-class Quotes(models.Model):
+
+class Quote(models.Model):
     """ Quote model """
 
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='quotes')
-    user = models.ForeignKey(related_name='quotes')  # todo add model
+    user = models.ForeignKey(User, related_name='quotes')
     content = models.CharField(max_length=10)
     up_votes = models.IntegerField()
     down_votes = models.IntegerField()
+
+
+class UserProfile(models.Model):
+    """
+    Profile model
+
+    Additional content for User model
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(upload_to='media/avatars/%Y/%m/%d', blank=True)
+
+    read_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
+    current_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
+    planned_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
+    forsaken_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
+
+    # todo
+    #  add image eraser function
