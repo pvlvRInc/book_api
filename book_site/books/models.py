@@ -4,11 +4,6 @@ from django.db import models
 
 # todo
 #  add format of files and files themself
-#  add verbose and related names
-#  define __str__
-#  add age restriction
-#  add announce book type
-#  add book language
 
 
 class Books(models.Model):
@@ -23,13 +18,27 @@ class Books(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Название')
     rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
     downloads = models.IntegerField(verbose_name='Скачиваний')
+    age_restriction = models.DecimalField(max_digits=2, decimal_places=0, verbose_name='Возрастное ограничение')
 
     BOOK_TYPES = (
-        ('T', 'Text'),
-        ('A', 'Audio'),
-        ('D', 'Draft'),
+        ('T', 'Текст'),
+        ('A', 'Аудио'),
+        ('D', 'Черновик'),
     )
     type = models.CharField(choices=BOOK_TYPES, verbose_name='Тип')
+
+    BOOK_LANGUAGES = (
+        ('RUS', 'Русский'),
+        ('ENG', 'Английский'),
+        ('FR', 'Французкий'),
+    )
+    language = models.CharField(choices=BOOK_LANGUAGES, verbose_name='Язык')
+
+    BOOK_STATUS = (
+        ('Published', 'Опубликована'),
+        ('Announced', 'Анонсирована'),
+    )
+    status = models.CharField(choices=BOOK_STATUS, verbose_name='Статус')
 
     publisher = models.ForeignKey('Companies', related_name='books', verbose_name='Издатель')
     authors = models.ManyToManyField('Artists', related_name='books', verbose_name='Авторы')
