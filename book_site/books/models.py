@@ -25,26 +25,26 @@ class Books(models.Model):
         ('A', 'Аудио'),
         ('D', 'Черновик'),
     )
-    type = models.CharField(choices=BOOK_TYPES, verbose_name='Тип')
+    type = models.CharField(choices=BOOK_TYPES, max_length=15, verbose_name='Тип')
 
     BOOK_LANGUAGES = (
         ('RUS', 'Русский'),
         ('ENG', 'Английский'),
         ('FR', 'Французкий'),
     )
-    language = models.CharField(choices=BOOK_LANGUAGES, verbose_name='Язык')
+    language = models.CharField(choices=BOOK_LANGUAGES, max_length=15, verbose_name='Язык')
 
     BOOK_STATUS = (
         ('Published', 'Опубликована'),
         ('Announced', 'Анонсирована'),
     )
-    status = models.CharField(choices=BOOK_STATUS, verbose_name='Статус')
+    status = models.CharField(choices=BOOK_STATUS, max_length=15, verbose_name='Статус')
 
-    publisher = models.ForeignKey('Companies', related_name='books', verbose_name='Издатель')
-    authors = models.ManyToManyField('Artists', related_name='books', verbose_name='Авторы')
-    illustrators = models.ManyToManyField('Artists', related_name='books', verbose_name='Иллюстраторы')
-    translators = models.ManyToManyField('Artists', related_name='books', verbose_name='Переводчики')
-    book_series = models.ForeignKey('Series', related_name='books', verbose_name='Серия')
+    publisher = models.ForeignKey('Companies', on_delete=models.CASCADE, related_name='books', verbose_name='Издатель')
+    authors = models.ManyToManyField('Artists', related_name='author_books', verbose_name='Авторы')
+    illustrators = models.ManyToManyField('Artists', related_name='illustrator_books', verbose_name='Иллюстраторы')
+    translators = models.ManyToManyField('Artists', related_name='translator_books', verbose_name='Переводчики')
+    book_series = models.ForeignKey('Series', blank=True, null=True, on_delete=models.SET_NULL, related_name='books', verbose_name='Серия')
     genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books', verbose_name='Жанры')
     tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books', verbose_name='Теги')
 
@@ -66,7 +66,7 @@ class Artists(models.Model):
         ('A', 'Author'),
         ('T', 'Translator'),
     )
-    type = models.CharField(choices=ARTIST_TYPES, verbose_name='Вид деятельности')
+    type = models.CharField(choices=ARTIST_TYPES, max_length=15, verbose_name='Вид деятельности')
 
     def __str__(self):
         return self.first_name + " " + self.last_name
@@ -114,7 +114,7 @@ class Commentary(models.Model):
 
     ip = models.CharField(max_length=10, verbose_name='IP Адресс')
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Книга')
-    user = models.ForeignKey(User, blank=True, null=True, related_name='commentaries', verbose_name='Пользователь')
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Пользователь')
     content = models.CharField(max_length=10, verbose_name='Содержание')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child',
                                verbose_name='Родитель')
@@ -126,7 +126,7 @@ class Commentary(models.Model):
 class UserBookRating(models.Model):
     """ UserBookRating model """
 
-    user = models.ForeignKey(User, verbose_name='Пользователь')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     rate = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
     book = models.ForeignKey(Books, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Книга')
 
@@ -138,7 +138,7 @@ class Quote(models.Model):
     """ Quote model """
 
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='quotes', verbose_name='Книга')
-    user = models.ForeignKey(User, related_name='quotes', verbose_name='Пользователь')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quotes', verbose_name='Пользователь')
     content = models.CharField(max_length=10, verbose_name='Содержание')
     up_votes = models.IntegerField(verbose_name='Голоса за')
     down_votes = models.IntegerField(verbose_name='Голоса против')
