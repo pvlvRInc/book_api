@@ -7,104 +7,107 @@ from django.db import models
 #  add verbose and related names
 #  define __str__
 #  add age restriction
+#  add announce book type
+#  add book language
+
 
 class Books(models.Model):
     """ Book model """
 
-    title = models.CharField(max_length=30)
-    description = models.TextField()
-    cover = models.ImageField(upload_to='media/covers/%Y/%m/%d', blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    publish_year = models.DecimalField(max_digits=4, decimal_places=0)
-    pages = models.DecimalField(max_digits=6, decimal_places=0)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    rating = models.DecimalField(max_digits=2, decimal_places=1)
-    downloads = models.IntegerField()
+    title = models.CharField(max_length=30, verbose_name='Название')
+    description = models.TextField(verbose_name='Описание')
+    cover = models.ImageField(upload_to='media/covers/%Y/%m/%d', blank=True, verbose_name='Название')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата загрузки')
+    publish_year = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Дата публикации')
+    pages = models.DecimalField(max_digits=6, decimal_places=0, verbose_name='Кол-во страниц')
+    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Название')
+    rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
+    downloads = models.IntegerField(verbose_name='Скачиваний')
 
     BOOK_TYPES = (
         ('T', 'Text'),
         ('A', 'Audio'),
         ('D', 'Draft'),
     )
-    type = models.CharField(choices=BOOK_TYPES)
+    type = models.CharField(choices=BOOK_TYPES, verbose_name='Тип')
 
-    publisher = models.ForeignKey('Companies', related_name='books')
-    authors = models.ManyToManyField('Artists', related_name='books')
-    illustrators = models.ManyToManyField('Artists', related_name='books')
-    translators = models.ManyToManyField('Artists', related_name='books')
-    book_series = models.ForeignKey('Series', related_name='books')
-    genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books')
-    tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books')
+    publisher = models.ForeignKey('Companies', related_name='books', verbose_name='Издатель')
+    authors = models.ManyToManyField('Artists', related_name='books', verbose_name='Авторы')
+    illustrators = models.ManyToManyField('Artists', related_name='books', verbose_name='Иллюстраторы')
+    translators = models.ManyToManyField('Artists', related_name='books', verbose_name='Переводчики')
+    book_series = models.ForeignKey('Series', related_name='books', verbose_name='Серия')
+    genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books', verbose_name='Жанры')
+    tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books', verbose_name='Теги')
 
 
 class Artists(models.Model):
     """ Artist model """
 
-    first_name = models.CharField(max_length=15)
-    last_name = models.CharField(max_length=15)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    email = models.EmailField(blank=True, null=True)
+    first_name = models.CharField(max_length=15, verbose_name='Имя')
+    last_name = models.CharField(max_length=15, verbose_name='Фамилия')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+    email = models.EmailField(blank=True, null=True, verbose_name='Почта')
 
     ARTIST_TYPES = (
         ('I', 'Illustrator'),
         ('A', 'Author'),
         ('T', 'Translator'),
     )
-    type = models.CharField(choices=ARTIST_TYPES)
+    type = models.CharField(choices=ARTIST_TYPES, verbose_name='Вид деятельности')
 
 
 class Companies(models.Model):
     """ Company model """
-    name = models.CharField(max_length=15)
-    email = models.EmailField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    created_year = models.DecimalField(max_digits=4, decimal_places=0)
+    name = models.CharField(max_length=15, verbose_name='Название')
+    email = models.EmailField(blank=True, null=True, verbose_name='Почта')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
 
 
 class Series(models.Model):
     """ Series model """
-    name = models.CharField(max_length=15)
-    description = models.TextField()
+    name = models.CharField(max_length=15, verbose_name='Название')
+    description = models.TextField(verbose_name='Описание')
 
 
 class Genres(models.Model):
     """ Genre model """
-    name = models.CharField(max_length=15)
-    description = models.TextField()
+    name = models.CharField(max_length=15, verbose_name='Название')
+    description = models.TextField(verbose_name='Описание')
 
 
 class Tags(models.Model):
     """ Tag model """
-    name = models.CharField(max_length=15)
+    name = models.CharField(max_length=15, verbose_name='Название')
 
 
 class Commentary(models.Model):
     """ Commentary model """
 
-    ip = models.CharField(max_length=10)
-    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries')
-    user = models.ForeignKey(User, blank=True, null=True, related_name='commentaries')
-    content = models.CharField(max_length=10)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    ip = models.CharField(max_length=10, verbose_name='IP Адресс')
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Книга')
+    user = models.ForeignKey(User, blank=True, null=True, related_name='commentaries', verbose_name='Пользователь')
+    content = models.CharField(max_length=10, verbose_name='Содержание')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child', verbose_name='Родитель')
 
 
 class UserBookRating(models.Model):
     """ UserBookRating model """
 
-    user = models.ForeignKey(User)
-    rate = models.DecimalField(max_digits=2, decimal_places=1)
-    book = models.ForeignKey(Books, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, verbose_name='Пользователь')
+    rate = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Книга')
 
 
 class Quote(models.Model):
     """ Quote model """
 
-    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='quotes')
-    user = models.ForeignKey(User, related_name='quotes')
-    content = models.CharField(max_length=10)
-    up_votes = models.IntegerField()
-    down_votes = models.IntegerField()
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='quotes', verbose_name='Книга')
+    user = models.ForeignKey(User, related_name='quotes', verbose_name='Пользователь')
+    content = models.CharField(max_length=10, verbose_name='Содержание')
+    up_votes = models.IntegerField(verbose_name='Голоса за')
+    down_votes = models.IntegerField(verbose_name='Голоса против')
 
 
 class UserProfile(models.Model):
@@ -114,13 +117,13 @@ class UserProfile(models.Model):
     Additional content for User model
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(upload_to='media/avatars/%Y/%m/%d', blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile', verbose_name='Пользователь')
+    avatar = models.ImageField(upload_to='media/avatars/%Y/%m/%d', blank=True, verbose_name='Аватар')
 
-    read_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
-    current_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
-    planned_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
-    forsaken_books = models.ManyToManyField(Books, symmetrical=False, related_name='+')
+    read_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Прочитано')
+    current_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Читает')
+    planned_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='В планах')
+    forsaken_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Брошено')
 
     # todo
     #  add image eraser function
