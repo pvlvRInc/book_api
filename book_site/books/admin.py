@@ -2,20 +2,19 @@ from django.contrib import admin
 
 from books.models import Books, Artists, Companies, Series, Genres, Tags, Commentary, UserBookRating, Quote, UserProfile
 
-# class BookAdmin(admin.ModelAdmin):
-#     fields =
-#     class Meta:
-#         verbose_name = 'Книга'
-#         verbose_name_plural = 'Книги'
+
+class BookAdmin(admin.ModelAdmin):
+    pass
 
 
-admin.register(Books)
-admin.register(Artists)
-admin.register(Companies)
-admin.register(Series)
-admin.register(Genres)
-admin.register(Tags)
-admin.register(Commentary)
-admin.register(UserBookRating)
-admin.register(Quote)
-admin.register(UserProfile)
+
+admin.site.register(Books, BookAdmin)
+admin.site.register(Artists)
+admin.site.register(Companies)
+admin.site.register(Series)
+admin.site.register(Genres)
+admin.site.register(Tags)
+admin.site.register(Commentary)
+admin.site.register(UserBookRating)
+admin.site.register(Quote)
+admin.site.register(UserProfile)

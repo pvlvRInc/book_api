@@ -44,12 +44,17 @@ class Books(models.Model):
     authors = models.ManyToManyField('Artists', related_name='author_books', verbose_name='Авторы')
     illustrators = models.ManyToManyField('Artists', related_name='illustrator_books', verbose_name='Иллюстраторы')
     translators = models.ManyToManyField('Artists', related_name='translator_books', verbose_name='Переводчики')
-    book_series = models.ForeignKey('Series', blank=True, null=True, on_delete=models.SET_NULL, related_name='books', verbose_name='Серия')
+    book_series = models.ForeignKey('Series', blank=True, null=True, on_delete=models.SET_NULL, related_name='books',
+                                    verbose_name='Серия')
     genres = models.ManyToManyField('Genres', symmetrical=False, blank=True, related_name='books', verbose_name='Жанры')
     tags = models.ManyToManyField('Tags', symmetrical=False, blank=True, related_name='books', verbose_name='Теги')
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = 'Книгу'
+        verbose_name_plural = 'Книги'
 
 
 class Artists(models.Model):
@@ -71,6 +76,10 @@ class Artists(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    class Meta:
+        verbose_name = 'Автора (Иллюстратора, Переводчика)'
+        verbose_name_plural = 'Авторы (Иллюстраторы, Переводчики)'
+
 
 class Companies(models.Model):
     """ Company model """
@@ -82,6 +91,10 @@ class Companies(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Издателя'
+        verbose_name_plural = 'Издательства'
+
 
 class Series(models.Model):
     """ Series model """
@@ -90,6 +103,10 @@ class Series(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Серию книг'
+        verbose_name_plural = 'Серии книг'
 
 
 class Genres(models.Model):
@@ -100,6 +117,10 @@ class Genres(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
 
 class Tags(models.Model):
     """ Tag model """
@@ -108,19 +129,28 @@ class Tags(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
 
 class Commentary(models.Model):
     """ Commentary model """
 
     ip = models.CharField(max_length=10, verbose_name='IP Адресс')
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Книга')
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='commentaries', verbose_name='Пользователь')
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='commentaries',
+                             verbose_name='Пользователь')
     content = models.CharField(max_length=10, verbose_name='Содержание')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child',
                                verbose_name='Родитель')
 
     def __str__(self):
         return self.book.title + self.content[:self.content.find('', 15)] + '...'
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
 
 class UserBookRating(models.Model):
@@ -132,6 +162,10 @@ class UserBookRating(models.Model):
 
     def __str__(self):
         return ' '.join([self.user, self.book, self.rating])
+
+    class Meta:
+        verbose_name = 'Пользовательский рейтинг'
+        verbose_name_plural = 'Пользовательские рейтинги'
 
 
 class Quote(models.Model):
@@ -145,6 +179,11 @@ class Quote(models.Model):
 
     def __str__(self):
         return self.book.title + ' ' + self.pk
+
+    class Meta:
+        verbose_name = 'Цитату'
+        verbose_name_plural = 'Цитаты'
+
 
 class UserProfile(models.Model):
     """
@@ -165,6 +204,10 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.get_username()
+
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
 
     # todo
     #  add image eraser function
