@@ -83,7 +83,8 @@ class Commentary(models.Model):
     """ Commentary model """
 
     ip = models.CharField(max_length=10)
-    user = models.ForeignKey(max_length=10, blank=True, null=True)  # todo add model
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='commentaries')
+    user = models.ForeignKey(blank=True, null=True, related_name='commentaries')  # todo add model
     content = models.CharField(max_length=10)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
@@ -94,3 +95,12 @@ class UserBookRating(models.Model):
     user = models.ForeignKey()  # todo add model
     content = models.CharField(max_length=10)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+
+class Quotes(models.Model):
+    """ Quote model """
+
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='quotes')
+    user = models.ForeignKey(related_name='quotes')  # todo add model
+    content = models.CharField(max_length=10)
+    up_votes = models.IntegerField()
+    down_votes = models.IntegerField()
