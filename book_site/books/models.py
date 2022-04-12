@@ -4,6 +4,7 @@ from django.db import models
 
 # todo
 #  add format of files and files themself
+#  add book cycles (cycles > series > books)
 
 
 class Books(models.Model):
@@ -96,7 +97,7 @@ class Books(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'Книгу'
+        verbose_name = 'Книга(у)'
         verbose_name_plural = 'Книги'
 
 
@@ -120,8 +121,8 @@ class Artists(models.Model):
         return self.first_name + " " + self.last_name
 
     class Meta:
-        verbose_name = 'Автора (Иллюстратора, Переводчика)'
-        verbose_name_plural = 'Авторы (Иллюстраторы, Переводчики)'
+        verbose_name = 'Автор(а), Иллюстратор(а), Переводчик(а)'
+        verbose_name_plural = 'Авторы, Иллюстраторы, Переводчики'
 
 
 class Companies(models.Model):
@@ -129,13 +130,13 @@ class Companies(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название')
     email = models.EmailField(blank=True, null=True, verbose_name='Почта')
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления', blank=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = 'Издателя'
+        verbose_name = 'Издатель(я)'
         verbose_name_plural = 'Издательства'
 
 
@@ -143,20 +144,20 @@ class Series(models.Model):
     """ Series model """
     name = models.CharField(max_length=150, verbose_name='Название')
     authors = models.ManyToManyField('Artists', related_name='author_series', verbose_name='Авторы')
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', blank=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = 'Серию книг'
+        verbose_name = 'Серия(ю) книг'
         verbose_name_plural = 'Серии книг'
 
 
 class Genres(models.Model):
     """ Genre model """
     name = models.CharField(max_length=50, verbose_name='Название')
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -182,6 +183,8 @@ class Commentary(models.Model):
     """ Commentary model """
 
     ip = models.CharField(max_length=50, verbose_name='IP Адресс')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
     book = models.ForeignKey(
         Books,
         on_delete=models.CASCADE,
@@ -207,7 +210,8 @@ class Commentary(models.Model):
     content = models.TextField(verbose_name='Содержание')
 
     def __str__(self):
-        return self.book.title + self.content[:self.content.find('', 15)] + '...'
+        who = str(self.user) if self.user else 'Annonimous'
+        return f'Комментарий {who} к книге {self.book}'
 
     class Meta:
         verbose_name = 'Комментарий'
@@ -242,7 +246,7 @@ class Quote(models.Model):
         return self.book.title + ' ' + self.pk
 
     class Meta:
-        verbose_name = 'Цитату'
+        verbose_name = 'Цитата(у)'
         verbose_name_plural = 'Цитаты'
 
 
