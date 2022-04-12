@@ -1,15 +1,21 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from books.models import Books, Artists, Companies, Series, Genres, Tags, Commentary, UserBookRating, Quote, UserProfile
 
 
 @admin.register(Books)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'cover', 'created_at', 'publish_year', 'price', 'rating', 'downloads', 'type', 'status')
+    list_display = ('title', 'cover_mini', 'created_at', 'publish_year', 'price', 'rating', 'downloads', 'type', 'status')
     readonly_fields = ('rating', 'downloads', 'created_at')
     list_filter = ('type', 'status')
     search_fields = ('title',)
 
+    def cover_mini(self, obj):
+        if obj.cover:
+            return mark_safe(f'<img src="{obj.cover.url}" width="75">')
+
+    cover_mini.short_description = 'Обложка'
 
 
 admin.site.register(Artists)

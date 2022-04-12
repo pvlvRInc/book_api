@@ -11,7 +11,7 @@ class Books(models.Model):
 
     title = models.CharField(max_length=150, verbose_name='Название')
     description = models.TextField(verbose_name='Описание')
-    cover = models.ImageField(upload_to='media/covers/%Y/%m/%d', blank=True, verbose_name='Обложка')
+    cover = models.ImageField(upload_to='covers/%Y/%m/%d', blank=True, verbose_name='Обложка')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата загрузки')
     publish_year = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Дата публикации')
     pages = models.DecimalField(max_digits=6, decimal_places=0, verbose_name='Кол-во страниц')
@@ -256,7 +256,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile', verbose_name='Пользователь')
     first_name = models.CharField(max_length=20, verbose_name='Имя')
     last_name = models.CharField(max_length=20, verbose_name='Фамилия')
-    avatar = models.ImageField(upload_to='media/avatars/%Y/%m/%d', blank=True, verbose_name='Аватар')
+    avatar = models.ImageField(upload_to='avatars/%Y/%m/%d', blank=True, verbose_name='Аватар')
 
     read_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Прочитано')
     current_books = models.ManyToManyField(Books, symmetrical=False, related_name='+', verbose_name='Читает')
